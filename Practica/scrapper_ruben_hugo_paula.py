@@ -1,4 +1,3 @@
-MAIN
 pd.set_option('max_colwidth', 800)
 
 url2 = "https://es.wikipedia.org/wiki/Anexo:Campeones_de_la_NBA"
