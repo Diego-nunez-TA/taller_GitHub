@@ -22,5 +22,5 @@ git push
 git branch prueba_1
 git branch --list: comprobar las que hay
 git checkout prueba_1: moverte de rama
-git branch d- prueba_1: borrarla
+git branch -d prueba_1: borrarla
 git push origin prueba_1: sincronizar con el repo
