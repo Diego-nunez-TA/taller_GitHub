@@ -10,6 +10,10 @@ import pandas as pd
 from selenium.webdriver.chrome.options import Options
 import random
 
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
 def waitAndClickElement(driver, elemento):
     """
     Espera a que un elemento sea clicable y hace clic en él.
@@ -117,6 +121,34 @@ def libros_mas_vendidos(url):
 libros_mas_vendidos(url)
 
 
+# URL de la página
+url = 'https://es.wikipedia.org/wiki/Anexo:Videojuegos_m%C3%A1s_vendidos'
+# Hacemos la petición a la página
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
+# Encontramos la tabla de los videojuegos más vendidos
+tabla = soup.find('table', {'class': 'wikitable'})
+# Extraemos todas las filas de la tabla
+filas = tabla.find_all('tr')
+# Lista para almacenar los datos
+datos = []
+# Iteramos sobre las filas para extraer los datos
+for fila in filas[1:]:  # Saltamos el encabezado
+    columnas = fila.find_all('td')
+    fila_datos = [columna.text.strip() for columna in columnas]
+    # Asegurarnos de que cada fila tenga al menos 5 columnas
+    while len(fila_datos) < 5:
+        fila_datos.append('')
+    # Tomamos solo las primeras 5 columnas
+    datos.append(fila_datos[:5])
+# Creamos un DataFrame de pandas con la columna de índice
+columnas = ['Juego', 'Desarrollador', 'Editor', 'Fecha de lanzamiento', 'Copias vendidas (millones)']
+df = pd.DataFrame(datos, columns=columnas)
+# Añadimos la columna de índice comenzando en 1
+df.insert(0, 'Índice', range(1, len(df) + 1))
+# Guardamos el DataFrame en un archivo CSV
+df.to_csv('videojuegos_mas_vendidos.csv', index=False)
+print("Datos exportados exitosamente a videojuegos_mas_vendidos.csv")
 
 
 
