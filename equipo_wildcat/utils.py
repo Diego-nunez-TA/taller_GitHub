@@ -1,8 +1,11 @@
 ### Librerías
 from bs4 import BeautifulSoup as bs
 import requests
+import datetime
 import pandas as pd
 from fake_useragent import UserAgent
+
+ua = UserAgent()
 
 ### Raúl
 def nbachamps_to_csv():
@@ -18,10 +21,7 @@ def nbachamps_to_csv():
     print("Creando csv...")
     nba_champs.to_csv("rgg_nba_champs.csv")
     print("¡Terminado!")
-    juegos_df = pd.DataFrame(dict_juegos)
-    juegos_df.to_csv("best10games.csv")
 
-ua = UserAgent()
 #Dataframe con los 10 juegos más vendidos de la historia, con título, desarrollador y fecha de lanzamiento. Manuel
 def create_games_csv():
     url = "https://vandal.elespanol.com/noticia/1350759936/los-juegos-mas-vendidos-de-la-historia-hasta-la-fecha-2023/"
@@ -34,5 +34,23 @@ def create_games_csv():
         "Desarrollador": [x.get_text()[16:].split("Fecha")[0] for x in soup.find_all("ul")[6:16]],
         "Fecha de lanzamiento": [x.text.split("Fecha de lanzamiento: ")[1][0:4] for x in soup.find_all("li") if x.text.startswith("Fecha de lanzamiento:")]
         }
+    juegos_df = pd.DataFrame(dict_juegos)
+    juegos_df.to_csv("best10games.csv")
+
+def top_libros():
+
+    now = str(datetime.datetime.now())[5:19].replace('-', '_').replace(':', '_').replace(' ', '-')
+    url = 'https://es.wikipedia.org/wiki/Anexo:Libros_m%C3%A1s_vendidos'
+    response = requests.get(url)
+    html = response.content
+    soup = bs(html, 'html.parser')
+
+    libros_info = {'Titulo' : [x.find_all('td')[0].get_text() for x in soup.find_all('table')[0].find_all('tr')[1:] if x.find_all('td')],
+                'Autor' : [x.find_all('td')[1].get_text() for x in soup.find_all('table')[0].find_all('tr')[1:] if x.find_all('td')],
+                'Publicacion' : [x.find_all('td')[3].get_text() for x in soup.find_all('table')[0].find_all('tr')[1:] if x.find_all('td')]}
+
+    top_libros_df = pd.DataFrame(libros_info)
+
+    top_libros_df.to_csv('top_libros_'+now+'.csv')
 
     
