@@ -150,5 +150,26 @@ df.insert(0, 'Índice', range(1, len(df) + 1))
 df.to_csv('videojuegos_mas_vendidos.csv', index=False)
 print("Datos exportados exitosamente a videojuegos_mas_vendidos.csv")
 
+#--------------------Sergio-----------------
+url = "https://es.wikipedia.org/wiki/Ochomil"
 
+def obtener_tablas_wikipedia(url):
+    tablas = pd.read_html(url)
+    print(f"Se encontraron {len(tablas)} tablas en la página.")
+    return tablas
+
+def mostrar_tablas(tablas, num_filas=15):
+    for i, tabla in enumerate(tablas):
+        print(f"\nTabla {i}:")
+        print(tabla.head(num_filas))
+
+def procesar_tabla_picos(tabla_picos):
+    columnas_a_eliminar = [
+        'Primera ascensión',
+        'Primer(os) alpinista(s) en la cumbre[7]​',
+        'Primera ascensión en invierno[8]​',
+        'Primer(os) alpinista(s) en la cumbre en invierno[8]​'
+    ]
+    tabla_limpia = tabla_picos.drop(columns=columnas_a_eliminar)
+    return tabla_limpia
 
